@@ -6,11 +6,13 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-
+using MyWebAPI.Configurations;
+using MyWebAPI.Data;
 
 namespace MyWebAPI
 {
@@ -29,6 +31,11 @@ namespace MyWebAPI
 
             services.AddControllers();
 
+            services.AddDbContext<DatabaseContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("sqlConnection"))
+            );
+
+
             services.AddCors(policy =>
             {
                 policy.AddPolicy("CoresPolicy", builder =>
@@ -36,6 +43,8 @@ namespace MyWebAPI
                                                        .AllowAnyMethod()
                                                        .AllowAnyHeader());
             });
+
+            services.AddAutoMapper(typeof(MapperInitilizer));
 
             services.AddSwaggerGen(options =>
             {
