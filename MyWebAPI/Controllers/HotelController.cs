@@ -6,6 +6,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using MyWebAPI.Helpers;
 using MyWebAPI.IRepository;
 using MyWebAPI.Models;
 
@@ -41,7 +42,7 @@ namespace MyWebAPI.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Something went wrong in the {nameof(GetHotel)}");
-                return StatusCode(500, "Internal Server error. Please try again later");
+                return StatusCode(500, Constants.Error500);
             }
         }
     }
