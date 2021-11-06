@@ -13,6 +13,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MyWebAPI.Configurations;
 using MyWebAPI.Data;
+using MyWebAPI.IRepository;
+using MyWebAPI.Repository;
 
 namespace MyWebAPI
 {
@@ -29,7 +31,7 @@ namespace MyWebAPI
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllers();
+            //services.AddControllers();
 
             services.AddDbContext<DatabaseContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("sqlConnection"))
@@ -45,6 +47,7 @@ namespace MyWebAPI
             });
 
             services.AddAutoMapper(typeof(MapperInitilizer));
+            services.AddTransient<IUnitOfWork, UnitOfWork>();
 
             services.AddSwaggerGen(options =>
             {
@@ -59,7 +62,10 @@ namespace MyWebAPI
                         Email = "prashant@tsiplc.com"
                     }
                 });
-            });           
+            });
+
+            services.AddControllers().AddNewtonsoftJson(options =>
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
