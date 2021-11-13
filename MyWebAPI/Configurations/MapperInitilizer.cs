@@ -5,7 +5,7 @@ using MyWebAPI.Models;
 
 namespace MyWebAPI.Configurations
 {
-    public class MapperInitilizer: Profile
+    public class MapperInitilizer : Profile
     {
         public MapperInitilizer()
         {
@@ -13,6 +13,7 @@ namespace MyWebAPI.Configurations
             CreateMap<Country, CreateCountryDTO>().ReverseMap();
             CreateMap<Hotel, HotelDTO>().ReverseMap();
             CreateMap<Hotel, CreateHotelDTO>().ReverseMap();
+            CreateMap<ApiUser, UserDTO>().ReverseMap();
         }
     }
 }

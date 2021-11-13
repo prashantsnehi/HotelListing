@@ -7,4 +7,11 @@ namespace MyWebAPI.Helpers
         public const string Error500 = "Internal Server error, Please try again later";
         public const string SomethingWrong = "Something went wrong in the ";
     }
+
+    public enum Role
+    {
+        User,
+        Admin,
+        SuperAdmin
+    }
 }

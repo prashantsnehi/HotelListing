@@ -13,8 +13,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MyWebAPI.Configurations;
 using MyWebAPI.Data;
+using MyWebAPI.Extensions;
 using MyWebAPI.IRepository;
 using MyWebAPI.Repository;
+using MyWebAPI.Services;
 
 namespace MyWebAPI
 {
@@ -37,17 +39,20 @@ namespace MyWebAPI
                 options.UseSqlServer(Configuration.GetConnectionString("sqlConnection"))
             );
 
+            services.AddAuthentication();
+
+            services.ConfigureIdentity();
+            services.ConfigureJwt(Configuration);
 
             services.AddCors(policy =>
             {
-                policy.AddPolicy("CoresPolicy", builder =>
-                                                builder.AllowAnyOrigin()
-                                                       .AllowAnyMethod()
-                                                       .AllowAnyHeader());
+                policy.AddPolicy("CoresPolicy", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             });
 
             services.AddAutoMapper(typeof(MapperInitilizer));
+
             services.AddTransient<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IAuthManager, AuthManager>();
 
             services.AddSwaggerGen(options =>
             {
@@ -84,6 +89,8 @@ namespace MyWebAPI
             app.UseCors("CoresPolicy");
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
