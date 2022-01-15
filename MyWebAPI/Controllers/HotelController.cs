@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MyWebAPI.Helpers;
 using MyWebAPI.IRepository;
@@ -35,7 +36,8 @@ namespace MyWebAPI.Controllers
             try
             {
 
-                var hotel = await _unitOfWork.Hotels.Get(x => x.Id == id, new List<string> { "Country" });
+                var hotel = await _unitOfWork.Hotels.Get(x => x.Id == id, 
+                                includes: q => q.Include(x => x.Country));
                 var result = _mapper.Map<HotelDTO>(hotel);
                 return Ok(result);
             }

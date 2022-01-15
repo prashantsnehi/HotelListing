@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
+using Marvin.Cache.Headers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MyWebAPI.Helpers;
 using MyWebAPI.IRepository;
@@ -27,13 +29,18 @@ namespace MyWebAPI.Controllers
         }
 
         [HttpGet]
+        // [ResponseCache(Duration = 60)]
+        // [ResponseCache(CacheProfileName = "120SecondsDuration")]
+        // Overriding global cache rule
+        [HttpCacheExpiration(CacheLocation = CacheLocation.Public, MaxAge = 120)]
+        [HttpCacheValidation(MustRevalidate = false)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetCountries()
+        public async Task<IActionResult> GetCountries([FromQuery] RequestParams requestParams)
         {
             try
             {
-                var countries = await _unitOfWork.Countries.GetAll();
+                var countries = await _unitOfWork.Countries.GetPagedList(requestParams);
                 var result = _mapper.Map<IList<CountryDTO>>(countries);
                 return Ok(result);
             }
@@ -51,7 +58,8 @@ namespace MyWebAPI.Controllers
         {
             try
             {
-                var country = await _unitOfWork.Countries.Get(x => x.Id == id, new List<string> { "Hotels" });
+                var country = await _unitOfWork.Countries.Get(x => x.Id == id, 
+                    includes: q => q.Include(x => x.Hotels));
                 var result = _mapper.Map<CountryDTO>(country);
                 return Ok(result);
             }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AspNetCoreRateLimit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -39,6 +40,12 @@ namespace MyWebAPI
                 options.UseSqlServer(Configuration.GetConnectionString("sqlConnection"))
             );
 
+            services.ConfigureHttpCacheHeaders();
+            
+            services.AddMemoryCache();
+            services.ConfigureRateLimit();
+            services.AddHttpContextAccessor();
+
             services.AddAuthentication();
 
             services.ConfigureIdentity();
@@ -69,7 +76,12 @@ namespace MyWebAPI
                 });
             });
 
-            services.AddControllers().AddNewtonsoftJson(options =>
+            services.AddControllers(config => {
+                config.CacheProfiles.Add("120SecondsDuration", new CacheProfile
+                {
+                    Duration = 120
+                });
+            }).AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
         }
 
@@ -87,6 +99,9 @@ namespace MyWebAPI
             app.UseHttpsRedirection();
 
             app.UseCors("CoresPolicy");
+            app.UseResponseCaching();
+            app.UseHttpCacheHeaders();
+            app.UseIpRateLimiting();
 
             app.UseRouting();
 

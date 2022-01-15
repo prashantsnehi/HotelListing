@@ -68,7 +68,7 @@ namespace MyWebAPI.Controllers
                 // addting role to the user after receiving success
                 await _userManager.AddToRolesAsync(user, new List<string> { Role.User.ToString() });
 
-                return Accepted();
+                return Accepted(new { token = await _authManager.CreateToken() });
             }
             catch (Exception ex)
             {
