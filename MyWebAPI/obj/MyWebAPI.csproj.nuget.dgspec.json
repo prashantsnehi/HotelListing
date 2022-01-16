@@ -14,7 +14,7 @@
         "outputPath": "/Users/psnehi/Projects/HotelListing/MyWebAPI/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/psnehi/.nuget/NuGet/NuGet.Config"
+          "/Users/psnehi/.config/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net5.0"

@@ -77,7 +77,7 @@ namespace MyWebAPI.Controllers
             }
         }
 
-        /*
+        
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
@@ -95,7 +95,12 @@ namespace MyWebAPI.Controllers
 
                 if (!result.Succeeded) return Unauthorized("Invalid login attampt");
 
-                return Accepted();
+                return Accepted(new TokenRequest 
+                    { 
+                        Token = await _authManager.CreateToken(), 
+                        RefreshToken = await _authManager.CreateRefreshToken() 
+                    }
+                );
             }
             catch (Exception ex)
             {
@@ -104,6 +109,14 @@ namespace MyWebAPI.Controllers
             }
         }
 
-        */
+        [HttpPost]
+        [Route("refreshtoken")]
+        public async Task<IActionResult> RefreshToken([FromBody] TokenRequest request)
+        {
+            var tokenRequest = await _authManager.VerifyRefreshToken(request);
+            if(tokenRequest is null) return Unauthorized();
+
+            return Ok(tokenRequest);
+        }
     }
 }

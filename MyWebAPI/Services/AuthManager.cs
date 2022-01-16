@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Linq;
+using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -78,6 +79,36 @@ namespace MyWebAPI.Services
         {
             _user = await _userManager.FindByNameAsync(model.Email);
             return (_user != null && await _userManager.CheckPasswordAsync(_user, model.Password));
+        }
+
+        public async Task<string> CreateRefreshToken()
+        {
+            await _userManager.RemoveAuthenticationTokenAsync(_user, "MyWebAPI", "RefreshToken");
+            var newRefreshToken = await _userManager.GenerateUserTokenAsync(_user,"MyWebAPI", "RefreshToken");
+            var result = await _userManager.SetAuthenticationTokenAsync(_user, "MyWebAPI", "RefreshToken", newRefreshToken);
+            return newRefreshToken;
+        }
+
+        public async Task<TokenRequest> VerifyRefreshToken(TokenRequest request)
+        {
+            // JwtSecurityTokenHandler jwtSecurityTokenHandler = new();
+            var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+            var tokenContent = jwtSecurityTokenHandler.ReadJwtToken(request.Token);
+            var username = tokenContent.Claims.ToList().FirstOrDefault(q => q.Type == ClaimTypes.Name).Value;
+            _user = await _userManager.FindByNameAsync(username);
+            try
+            {
+                var isValid = await _userManager.VerifyUserTokenAsync(_user, "MyWebAPI", "RefreshToken", request.RefreshToken);
+                if(isValid) return new TokenRequest { Token = await CreateToken(), RefreshToken = await CreateRefreshToken() };
+
+                await _userManager.UpdateSecurityStampAsync(_user);
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+
+            return null;
         }
     }
 }

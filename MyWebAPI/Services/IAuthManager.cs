@@ -8,5 +8,7 @@ namespace MyWebAPI.Services
     {
         Task<bool> ValidateUser(LoginDTO model);
         Task<string> CreateToken();
+        Task<string> CreateRefreshToken();
+        Task<TokenRequest> VerifyRefreshToken(TokenRequest request);
     }
 }

@@ -61,20 +61,21 @@ namespace MyWebAPI
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IAuthManager, AuthManager>();
 
-            services.AddSwaggerGen(options =>
-            {
-                options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
-                {
-                    Title = "HotelListing",
-                    Version = "v1",
-                    Description = "Learning REST API using ASP.NET Core 5.0",
-                    Contact = new Microsoft.OpenApi.Models.OpenApiContact
-                    {
-                        Name = "Prashant",
-                        Email = "prashant@tsiplc.com"
-                    }
-                });
-            });
+            services.ConfigureSwaggerDoc();
+            // services.AddSwaggerGen(options =>
+            // {
+            //     options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+            //     {
+            //         Title = "HotelListing",
+            //         Version = "v1",
+            //         Description = "Learning REST API using ASP.NET Core 5.0",
+            //         Contact = new Microsoft.OpenApi.Models.OpenApiContact
+            //         {
+            //             Name = "Prashant",
+            //             Email = "prashant@tsiplc.com"
+            //         }
+            //     });
+            // });
 
             services.AddControllers(config => {
                 config.CacheProfiles.Add("120SecondsDuration", new CacheProfile
